@@ -12,7 +12,6 @@
                         alt="{{ $conversation['partner']->username }}" 
                         class="rounded-circle"
                     >
-                    {{-- блок для счетчика --}}
                     @if($conversation['unread_count'] > 0)
                         <span class="badge unread-badge">{{ $conversation['unread_count'] }}</span>
                     @endif
@@ -20,9 +19,6 @@
                 <div class="conversation-content">
                     <div class="conversation-header">
                         <h5 class="username">{{ $conversation['partner']->username }}</h5>
-                        <span class="time">
-                            {{ $conversation['last_message']->created_at->diffForHumans() }}
-                        </span>
                     </div>
                     <p class="last-message">
                         {{ Str::limit($conversation['last_message']->content ?? 'Нет сообщений', 50) }}
@@ -32,15 +28,15 @@
                     <a href="{{ route('messages.conversation', $conversation['partner']) }}" class="btn btn-primary btn-sm">
                         Написать
                     </a>
+                    <span class="time">
+                        {{ $conversation['last_message']->created_at->diffForHumans() }}
+                    </span>
                 </div>
             </div>
         @endforeach
     </div>
 </div>
 @endsection
-
-
-
 
 <style>
 .messages-container {
@@ -108,9 +104,16 @@
     font-weight: 600;
 }
 
+.conversation-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+}
+
 .time {
     color: #888;
-    font-size: 0.8rem;
+    font-size: 0.7rem;
 }
 
 .last-message {
@@ -123,6 +126,7 @@
 
 .conversation-actions .btn {
     padding: 5px 10px;
+    margin-bottom: 5px;
 }
 
 @media (max-width: 576px) {

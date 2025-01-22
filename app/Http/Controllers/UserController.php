@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
@@ -30,29 +31,40 @@ class UserController extends Controller
 }
 
 
-    public function updateProfile(Request $request)
-    {
-        $user = auth()->user();
+public function updateProfile(Request $request)
+{
+    $user = auth()->user();
 
-        $validated = $request->validate([
-            'username' => 'sometimes|unique:users,username,' . $user->id,
-            'email' => 'sometimes|email|unique:users,email,' . $user->id,
-            'avatar' => 'nullable|image|max:2048'
-        ]);
+    $validated = $request->validate([
+        'username' => 'sometimes|unique:users,username,' . $user->id,
+        'email' => 'sometimes|email|unique:users,email,' . $user->id,
+        'avatar' => 'nullable|image|max:2048',
+        'bio' => 'nullable|string|max:500',
+        'password' => 'nullable|min:6|confirmed',
+        'private_profile' => 'boolean'
+    ]);
 
-        if ($request->hasFile('avatar')) {
-            if ($user->avatar) {
-                Storage::disk('public')->delete($user->avatar);
-            }
-
-            $avatarPath = $request->file('avatar')->store('avatars', 'public');
-            $validated['avatar'] = $avatarPath;
+    // Обработка аватара
+    if ($request->hasFile('avatar')) {
+        // Удаление старого аватара
+        if ($user->avatar) {
+            Storage::disk('public')->delete($user->avatar);
         }
-
-        $user->update($validated);
-
-        return response()->json($user);
+        $avatarPath = $request->file('avatar')->store('avatars', 'public');
+        $validated['avatar'] = $avatarPath;
     }
+
+    // Обновление пароля
+    if ($request->filled('password')) {
+        $validated['password'] = Hash::make($validated['password']);
+    } else {
+        unset($validated['password']);
+    }
+
+    $user->update($validated);
+
+    return redirect()->back()->with('success', 'Профиль успешно обновлен');
+}
 
     public function search(Request $request)
     {

@@ -26,8 +26,10 @@ Route::middleware(['auth'])->group(function() {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
     Route::get('/home', [HomeController::class, 'index'])->name('home')->middleware('auth');
     // Профиль пользователя
-    Route::get('/profile', [UserController::class, 'profile'])->name('profile');
-    Route::put('/profile', [UserController::class, 'updateProfile']);
+    Route::get('/profile', [UserController::class, 'profile'])
+    ->name('profile');
+Route::put('/profile', [UserController::class, 'updateProfile'])
+    ->name('profile.update');
 
     // Каналы
     Route::resource('channels', ChannelController::class);

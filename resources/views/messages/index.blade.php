@@ -6,19 +6,39 @@
     <div class="conversations-grid">
         @foreach($conversations as $conversation)
             <div class="conversation-card">
-                <div class="conversation-avatar">
+                <div class="conversation-avatar position-relative">
                     <img 
                         src="{{ $conversation['partner']->avatar ? asset('storage/' . $conversation['partner']->avatar) : asset('default-avatar.png') }}" 
                         alt="{{ $conversation['partner']->username }}" 
                         class="rounded-circle"
                     >
+                    @if($conversation['partner']->isOnline())
+                        <span class="online-status-badge position-absolute" style="
+                            bottom: 0;
+                            right: 0;
+                            width: 12px;
+                            height: 12px;
+                            background-color: #4CAF50;
+                            border-radius: 50%;
+                            border: 2px solid white;
+                        "></span>
+                    @endif
                     @if($conversation['unread_count'] > 0)
                         <span class="badge unread-badge">{{ $conversation['unread_count'] }}</span>
                     @endif
                 </div>
                 <div class="conversation-content">
                     <div class="conversation-header">
-                        <h5 class="username">{{ $conversation['partner']->username }}</h5>
+                        <h5 class="username">
+                            {{ $conversation['partner']->username }}
+                            @if($conversation['partner']->isOnline())
+                                <span class="text-success ml-2" style="font-size: 0.7rem;">Online</span>
+                            @else
+                                <span class="text-muted ml-2" style="font-size: 0.7rem;">
+                                    {{ $conversation['partner']->lastSeenFormatted() }}
+                                </span>
+                            @endif
+                        </h5>
                     </div>
                     <p class="last-message">
                         {{ Str::limit($conversation['last_message']->content ?? 'Нет сообщений', 50) }}
@@ -78,16 +98,26 @@
     object-fit: cover;
 }
 
-.unread-badge {
-    position: absolute;
-    top: -5px;
-    right: -5px;
-    background-color: #2196F3;
-    color: white;
-    border-radius: 50%;
-    padding: 2px 6px;
-    font-size: 0.7rem;
+.conversations-grid .conversation-avatar .unread-badge {
+    position: absolute !important;
+    top: -5px !important;
+    right: -5px !important;
+    background-color: #ff3b5c !important;
+    color: white !important;
+    border-radius: 50% !important;
+    min-width: 25px !important;
+    height: 25px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 2px !important;
+    font-size: 0.7rem !important;
+    font-weight: 600 !important;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12) !important;
+    z-index: 10 !important;
 }
+
+
 
 .conversation-content {
     overflow: hidden;

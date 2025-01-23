@@ -11,6 +11,15 @@
                 style="width: 50px; height: 50px; object-fit: cover;"
             >
             <h5 class="mb-0 ml-3">Переписка с {{ $user->username }}</h5>
+            <div class="position-absolute" style="left: 50%; transform: translateX(-50%);">
+                <small class="text-muted">
+                    @if($user->isOnline())
+                        <span class="text-success">Online</span>
+                    @else
+                        Был(а) в сети {{ $user->lastSeenFormatted() }}
+                    @endif
+                </small>
+            </div>
         </div>
         <div class="card-body">
             @foreach($messages as $message)
